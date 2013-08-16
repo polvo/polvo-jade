@@ -16,13 +16,21 @@ module.exports = new (Index = (function() {
 
   Index.prototype.polvo = true;
 
-  Index.prototype.type = 'js';
+  Index.prototype.type = 'template';
 
   Index.prototype.name = 'jade';
+
+  Index.prototype.output = 'js';
 
   Index.prototype.ext = /\.jade$/m;
 
   Index.prototype.exts = ['.jade'];
+
+  Index.prototype.partials = true;
+
+  Index.prototype.is_partial = function(filepath) {
+    return /^_/m.test(path.basename(filepath));
+  };
 
   Index.prototype.compile = function(filepath, source, debug, done) {
     var compiled, err;
@@ -43,6 +51,10 @@ module.exports = new (Index = (function() {
     var filepath;
     filepath = path.join(__dirname, 'node_modules', 'jade', 'runtime.js');
     return fs.readFileSync(filepath, 'utf-8');
+  };
+
+  Index.prototype.resolve_dependents = function(filepath, files) {
+    return [];
   };
 
   return Index;
