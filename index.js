@@ -32,17 +32,17 @@ module.exports = new (Index = (function() {
     return /^_/m.test(path.basename(filepath));
   };
 
-  Index.prototype.compile = function(filepath, source, debug, done) {
+  Index.prototype.compile = function(filepath, source, debug, error, done) {
     var compiled, err;
     try {
       compiled = jade.compile(source, {
         filename: filepath,
         client: true,
-        compileDebug: false
+        compileDebug: debug
       });
     } catch (_error) {
       err = _error;
-      throw err;
+      return error(err);
     }
     return done('module.exports = ' + compiled, null);
   };

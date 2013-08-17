@@ -19,15 +19,14 @@ module.exports = new class Index
   partials: on
   is_partial:(filepath)-> /^_/m.test path.basename filepath
 
-  compile:( filepath, source, debug, done )->
+  compile:( filepath, source, debug, error, done )->
     try
       compiled = jade.compile source,
         filename: filepath
         client: true
-        # compileDebug: debug
-        compileDebug: false
+        compileDebug: debug
     catch err
-      throw err
+      return error err
 
     done 'module.exports = ' + compiled, null
 
