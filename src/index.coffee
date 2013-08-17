@@ -24,15 +24,36 @@ module.exports = new class Index
       compiled = jade.compile source,
         filename: filepath
         client: true
-        compileDebug: debug
+        # compileDebug: debug
+        compileDebug: false
     catch err
       throw err
 
     done 'module.exports = ' + compiled, null
 
-  fetch_helpers:->
-    filepath = path.join __dirname, 'node_modules', 'jade', 'runtime.js'
-    fs.readFileSync filepath, 'utf-8'
+  resolve_dependents:(file, files)->
+    dependents = []
+    has_include_calls = /^\s*(?!\/\/)include\s/m
 
-  resolve_dependents:(filepath, files)->
-    []
+    for each in files
+
+      continue if not has_include_calls.test each.raw
+
+      dirpath = path.dirname each.filepath
+      name = path.basename each.filepath
+      match_all = /^\s*(?!\/\/)include\s+(\S+)/mg
+
+      while (match = match_all.exec each.raw)?
+
+        short_id = match[1]
+        short_id += '.jade' if '' is path.extname short_id
+
+        full_id = path.join dirpath, short_id
+
+        if full_id is file.filepath
+          if not @is_partial name
+            dependents.push each
+          else
+            dependents = dependents.concat @resolve_dependents each, files
+
+    dependents

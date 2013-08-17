@@ -38,7 +38,7 @@ module.exports = new (Index = (function() {
       compiled = jade.compile(source, {
         filename: filepath,
         client: true,
-        compileDebug: debug
+        compileDebug: false
       });
     } catch (_error) {
       err = _error;
@@ -47,14 +47,34 @@ module.exports = new (Index = (function() {
     return done('module.exports = ' + compiled, null);
   };
 
-  Index.prototype.fetch_helpers = function() {
-    var filepath;
-    filepath = path.join(__dirname, 'node_modules', 'jade', 'runtime.js');
-    return fs.readFileSync(filepath, 'utf-8');
-  };
-
-  Index.prototype.resolve_dependents = function(filepath, files) {
-    return [];
+  Index.prototype.resolve_dependents = function(file, files) {
+    var dependents, dirpath, each, full_id, has_include_calls, match, match_all, name, short_id, _i, _len;
+    dependents = [];
+    has_include_calls = /^\s*(?!\/\/)include\s/m;
+    for (_i = 0, _len = files.length; _i < _len; _i++) {
+      each = files[_i];
+      if (!has_include_calls.test(each.raw)) {
+        continue;
+      }
+      dirpath = path.dirname(each.filepath);
+      name = path.basename(each.filepath);
+      match_all = /^\s*(?!\/\/)include\s+(\S+)/mg;
+      while ((match = match_all.exec(each.raw)) != null) {
+        short_id = match[1];
+        if ('' === path.extname(short_id)) {
+          short_id += '.jade';
+        }
+        full_id = path.join(dirpath, short_id);
+        if (full_id === file.filepath) {
+          if (!this.is_partial(name)) {
+            dependents.push(each);
+          } else {
+            dependents = dependents.concat(this.resolve_dependents(each, files));
+          }
+        }
+      }
+    }
+    return dependents;
   };
 
   return Index;
