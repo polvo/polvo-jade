@@ -77,6 +77,13 @@ module.exports = new (Index = (function() {
     return dependents;
   };
 
+  Index.prototype.fetch_helpers = function() {
+    var filepath;
+    filepath = path.join(__dirname, 'node_modules', 'jade');
+    filepath = path.join(filepath, 'runtime.js');
+    return fs.readFileSync(filepath, 'utf-8');
+  };
+
   return Index;
 
 })());

@@ -56,3 +56,8 @@ module.exports = new class Index
             dependents = dependents.concat @resolve_dependents each, files
 
     dependents
+
+  fetch_helpers:->
+    filepath = path.join __dirname, 'node_modules', 'jade'
+    filepath = path.join filepath, 'runtime.js'
+    fs.readFileSync filepath, 'utf-8'
