@@ -1,5 +1,41 @@
+MVERSION=node_modules/.bin/mversion
+VERSION=`$(MVERSION) | sed -E 's/\* package.json: //g'`
+
+
+setup:
+	@npm install
+
+
+
 watch:
-	coffee -bwco ./ src/index.coffee
+	@$(CS) -bwc index.coffee
 
 build:
-	coffee -bco ./ src/index.coffee
+	@$(CS) -bc index.coffee
+
+
+
+bump.minor:
+	@$(MVERSION) minor
+
+bump.major:
+	@$(MVERSION) major
+
+bump.patch:
+	@$(MVERSION) patch
+
+
+
+publish:
+	git tag $(VERSION)
+	git push origin $(VERSION)
+	git push origin master
+	npm publish
+
+re-publish:
+	git tag -d $(VERSION)
+	git tag $(VERSION)
+	git push origin :$(VERSION)
+	git push origin $(VERSION)
+	git push origin master -f
+	npm publish -f

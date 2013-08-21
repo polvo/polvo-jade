@@ -1,6 +1,6 @@
 {
   "name": "polvo-jade",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Anderson Arboleya <anderson@arboleya.me>",
   "description": "Jade plugin for Polvo",
   "keywords": [
@@ -17,10 +17,11 @@
     "url": "http://github.com/polvo/polvo-jade"
   },
   "dependencies": {
-    "jade": "0.34.x",
+    "jade": "0.35.x",
     "source-map-support": "0.2.x"
   },
   "devDependencies": {
-    "coffee-script": "1.6.x"
+    "coffee-script": "1.6.x",
+    "mversion": "~0.2.0"
   }
 }
