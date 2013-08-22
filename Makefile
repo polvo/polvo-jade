@@ -1,4 +1,5 @@
 MVERSION=node_modules/.bin/mversion
+CS=node_modules/coffee-script/bin/coffee
 VERSION=`$(MVERSION) | sed -E 's/\* package.json: //g'`
 
 
