@@ -7,8 +7,6 @@ jade = require 'jade'
 
 module.exports = new class Index
 
-  polvo: true
-
   type: 'template'
   name: 'jade'
   output: 'js'

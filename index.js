@@ -14,8 +14,6 @@ jade = require('jade');
 module.exports = new (Index = (function() {
   function Index() {}
 
-  Index.prototype.polvo = true;
-
   Index.prototype.type = 'template';
 
   Index.prototype.name = 'jade';
