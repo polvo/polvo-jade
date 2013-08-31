@@ -4,6 +4,7 @@
 fs = require 'fs'
 path = require 'path'
 jade = require 'jade'
+clone = require 'regexp-clone'
 
 module.exports = new class Index
 
@@ -15,7 +16,12 @@ module.exports = new class Index
   exts: ['.jade' ]
 
   partials: on
-  is_partial:(filepath)-> /^_/m.test path.basename filepath
+
+  has_include = /^\s*(?:(?!\/\/).?)include\s/m
+  match_all = /^\s*(?:(?!\/\/).?)include\s+(\S+)/mg
+
+  is_partial:(filepath)->
+    /^_/m.test path.basename filepath
 
   compile:( filepath, source, debug, error, done )->
     try
@@ -24,38 +30,36 @@ module.exports = new class Index
         client: true
         compileDebug: debug
     catch err
-      return error err
+      error err
+      return done '', null
 
     done 'module.exports = ' + compiled, null
 
-  resolve_dependents:(file, files)->
+  resolve_dependents:(filepath, files)->
     dependents = []
-    has_include_calls = /^\s*(?!\/\/)include\s/m
 
     for each in files
-
-      continue if not has_include_calls.test each.raw
+      [has, all] = [clone(has_include), clone(match_all)]
+      continue if not has.test each.raw
 
       dirpath = path.dirname each.filepath
       name = path.basename each.filepath
-      match_all = /^\s*(?!\/\/)include\s+(\S+)/mg
 
-      while (match = match_all.exec each.raw)?
+      while (match = all.exec each.raw)?
+        include = match[1]
+        include = include.replace(@ext, '') + '.jade'
+        include = path.join dirpath, include
 
-        short_id = match[1]
-        short_id += '.jade' if '' is path.extname short_id
-
-        full_id = path.join dirpath, short_id
-
-        if full_id is file.filepath
+        if include is filepath
           if not @is_partial name
             dependents.push each
           else
-            dependents = dependents.concat @resolve_dependents each, files
+            sub = @resolve_dependents each.filepath, files
+            dependents = dependents.concat sub
 
     dependents
 
   fetch_helpers:->
-    filepath = path.join __dirname, 'node_modules', 'jade'
+    filepath = path.join __dirname, '..', 'node_modules', 'jade'
     filepath = path.join filepath, 'runtime.js'
     fs.readFileSync filepath, 'utf-8'
