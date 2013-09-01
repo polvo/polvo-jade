@@ -32,7 +32,7 @@ describe '[polvo-jade]', ->
     count.out.should.equal 1
     count.err.should.equal 1
 
-  it 'should compile file without any surprise', ->
+  it 'should compile file without any surprise - release mode', ->
     @timeout 5000
     count =  err: 0, out: 0
     error = (msg)-> count.err++
@@ -49,6 +49,26 @@ describe '[polvo-jade]', ->
     fs.writeFileSync paths._a, fixed
 
     jade.compile paths.base, contents.base, false, error, done
+    count.out.should.equal 1
+    count.err.should.equal 0
+
+    # roll back original file
+    fs.writeFileSync paths._a, broken
+
+  it 'should compile file without any surprise - dev mode', ->
+    @timeout 5000
+    count =  err: 0, out: 0
+    error = (msg)-> count.err++
+    done = ( compiled )->
+      count.out++
+      compiled.match(/jade.+\.unshift\({ lineno: /g).length.should.be.above 15
+
+    # remove inexistent include
+    broken = fs.readFileSync(paths._a).toString()
+    fixed = broken.replace 'include sub/non/existent', ''
+    fs.writeFileSync paths._a, fixed
+
+    jade.compile paths.base, contents.base, true, error, done
     count.out.should.equal 1
     count.err.should.equal 0
 
