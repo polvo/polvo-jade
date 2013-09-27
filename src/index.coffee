@@ -8,6 +8,9 @@ clone = require 'regexp-clone'
 
 module.exports = new class Index
 
+  # will be injected by polvo
+  config: null
+
   type: 'template'
   name: 'jade'
   output: 'js'
@@ -24,16 +27,23 @@ module.exports = new class Index
     /^_/m.test path.basename filepath
 
   compile:( filepath, source, debug, error, done )->
+    client = not @config.output.html?
+    approach = if client then 'compile' else 'render'
+
     try
-      compiled = jade.compile source,
+      compiled = jade[approach] source,
         filename: filepath
-        client: true
+        client: client
         compileDebug: debug
+        pretty: debug
     catch err
       error err
       return done '', null
 
-    done 'module.exports = ' + compiled, null
+    buffer = compiled
+    buffer = 'module.exports = ' + buffer if client
+
+    done buffer, null
 
   resolve_dependents:(filepath, files)->
     dependents = []
