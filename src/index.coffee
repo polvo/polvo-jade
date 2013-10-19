@@ -17,8 +17,8 @@ module.exports = new class Index
 
   partials: on
 
-  has_include = /^\s*(?:(?!\/\/).?)include\s/m
-  match_all = /^\s*(?:(?!\/\/).?)include\s+(\S+)/mg
+  has_deps = /^\s*(?:(?!\/\/).?)(?:include|extends)\s/m
+  match_all_deps = /^\s*(?:(?!\/\/).?)(?:include|extends)\s+(\S+)/mg
 
   is_partial:(filepath)->
     /^_/m.test path.basename filepath
@@ -39,7 +39,7 @@ module.exports = new class Index
     dependents = []
 
     for each in files
-      [has, all] = [clone(has_include), clone(match_all)]
+      [has, all] = [clone(has_deps), clone(match_all_deps)]
       continue if not has.test each.raw
 
       dirpath = path.dirname each.filepath
