@@ -41,18 +41,19 @@ There's a built in support for partials in Jade, polvo will handle them in a
 particular conventioned way.
 
 Every file starting with `_` won't be compiled alone. Instead, if some other
-file that doesn't start with `_` imports it, it will be compiled within it.
+file that doesn't start with `_` imports or extends it, it will be compiled
+within it.
 
-The import tag follows the Jade include's default syntax.
-
+The import tag follows the Jade default syntax.
 
 To include a partial in your `jade`, just:
 
  1. Name your patial accordingly so it starts with `_`
- 1. Include it in any of your `jade` files by using the syntax
+ 1. Calls it from any of your `jade` files by using the `include` or `extends` directive
 
- ````jade
+````jade
  include ./_partial-name-here
- ````
+ extends ./_partial-name-here
+````
 
- Partials are referenced relatively.
+Partials are referenced relatively.
