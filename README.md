@@ -4,7 +4,7 @@ With this plugin, Polvo can handle Jade source files.
 
 [![Stories in Ready](https://badge.waffle.io/polvo/polvo-jade.png)](https://waffle.io/polvo/polvo-jade)
 
-[![Build Status](https://secure.travis-ci.org/polvo/polvo-jade.png)](http://travis-ci.org/polvo/polvo-jade) [![Coverage Status](https://coveralls.io/repos/polvo/polvo-jade/badge.png)](https://coveralls.io/r/polvo/polvo-jade)
+[![Build Status](https://travis-ci.org/polvo/polvo-jade.png?branch=master)](http://travis-ci.org/polvo/polvo-jade) [![Coverage Status](https://coveralls.io/repos/polvo/polvo-jade/badge.png)](https://coveralls.io/r/polvo/polvo-jade)
 
 [![Dependency Status](https://gemnasium.com/polvo/polvo-jade.png)](https://gemnasium.com/polvo/polvo-jade) [![NPM version](https://badge.fury.io/js/polvo-jade.png)](http://badge.fury.io/js/polvo-jade)
 
