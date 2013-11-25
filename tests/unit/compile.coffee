@@ -11,10 +11,13 @@ paths =
   base: path.join fixtures, 'base.jade'
   _a: path.join fixtures, '_a.jade'
   _d: path.join fixtures, 'sub', '_d.jade'
+  layout: path.join fixtures, '_layout', '_layout.jade'
+  extends: path.join fixtures, '_layout', 'extends.jade'
 
 contents = 
   base: fs.readFileSync(paths.base).toString()
   _d: fs.readFileSync(paths._d).toString()
+  extends: fs.readFileSync(paths.extends).toString()
 
 describe '[polvo-jade]', ->
 
@@ -90,3 +93,39 @@ describe '[polvo-jade]', ->
     helper = fs.readFileSync filepath, 'utf-8'
 
     jade.fetch_helpers().should.be.equal helper
+
+  it 'when the layout changes children must be updated', ->
+
+    @timeout 5000
+    count =  err: 0, out: 0
+    compiled_content = original: '', modified: ''
+    error = (msg)-> 
+
+      console.error 'error ->', msg
+      count.err++
+
+    original_done = ( compiled )->
+      count.out++
+      compiled_content.original = compiled
+
+    modified_done = ( compiled )->
+      count.out++
+      compiled_content.modified = compiled
+
+    jade.compile paths.extends, contents.extends, false, error, original_done
+
+    # modifies layout code
+    original = fs.readFileSync(paths.layout).toString()
+    modified = original.replace 'layer_3', 'layer_5'
+    fs.writeFileSync paths.layout, modified
+
+    jade.compile paths.extends, contents.extends, false, error, modified_done
+
+    # roll back to original
+    fs.writeFileSync paths.layout, original
+
+    count.out.should.equal 2
+    count.err.should.equal 0
+
+    (compiled_content.original == compiled_content.modified).should.equal false
+
